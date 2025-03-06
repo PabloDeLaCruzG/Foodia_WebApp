@@ -2,6 +2,7 @@ import { Router } from "express";
 import { param, body } from "express-validator";
 import RecipeController from "../controllers/RecipeController";
 import { validateRequest } from "../middleware/validation";
+import verifyToken from "../middleware/auth";
 
 const recipeRoutes = Router();
 
@@ -74,16 +75,17 @@ recipeRoutes.post(
     .optional()
     .isString()
     .withMessage("extraDetails debe ser un string"),
-
+  verifyToken,
   validateRequest,
   RecipeController.generateRecipe
 );
 
-recipeRoutes.get("/", RecipeController.getAllRecipes);
+recipeRoutes.get("/", verifyToken, RecipeController.getAllRecipes);
 
 recipeRoutes.get(
   "/:id",
   param("id").isMongoId().withMessage("ID inválido"),
+  verifyToken,
   validateRequest,
   RecipeController.getRecipeById
 );
@@ -91,6 +93,7 @@ recipeRoutes.get(
 recipeRoutes.delete(
   "/:id",
   param("id").isMongoId().withMessage("ID inválido"),
+  verifyToken,
   validateRequest,
   RecipeController.deleteRecipeById
 );
@@ -181,6 +184,7 @@ recipeRoutes.post(
     .isString()
     .withMessage("La descripción del paso debe ser un string"),
 
+  verifyToken,
   validateRequest,
   RecipeController.createRecipe
 );

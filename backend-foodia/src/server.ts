@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db";
 import recipeRoutes from "./routes/recipeRoutes";
+import authRoutes from "./routes/authRoutes";
 
 dotenv.config();
 connectDB();
@@ -19,5 +20,6 @@ app.use(
 
 // Routes
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/auth", authRoutes);
 
 export default app;
