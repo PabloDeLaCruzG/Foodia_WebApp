@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "scripts": {
+    "dev": "concurrently \"cd backend-foodia && npm run dev\" \"cd next-foodia && npm run dev\""
+  }
+}

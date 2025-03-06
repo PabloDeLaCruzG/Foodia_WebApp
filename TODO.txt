@@ -1,0 +1,26 @@
+- Seguir con Next 
+
+*****IMAGENES DE COMIDA*****
+*PARA LA IMAGEN DE LA RECETA TENGO QUE MIRAR APIS DE IMAGENES DE COMIDA QUE PERMITAN BUSCAR POR KEYWORDS O CREAR UN NUEVO PROMOT PARA QUE GENERE LA IMAGEN CHATGPT CON DALEE*
+	1.	Unsplash
+	•	https://unsplash.com/
+	•	Uno de los bancos gratuitos más grandes. Tienen muchísimas fotos de comida y gastronomía de alta calidad.
+	•	Dispone de una API pública (Unsplash API) para buscar imágenes por palabra clave (por ejemplo, “chicken dish” o “vegan food”).
+	2.	Pexels
+	•	https://www.pexels.com/
+	•	Similar a Unsplash: gran repertorio de imágenes de stock.
+	•	También ofrece su API de Pexels para buscar y obtener imágenes programáticamente.
+
+- Generar la imagen por IA (DALL·E, Stable Diffusion, etc.)
+	1.	Tras generar el texto de la receta con ChatGPT/GPT, construyes un prompt que describa la receta (p.ej. “food photography of [title], [description], professional, high resolution…”).
+	2.	Llamas a un servicio de generación de imágenes (OpenAI DALL·E, Midjourney API, Stable Diffusion, etc.).
+	3.	El servicio te devolverá una URL de la imagen o la propia imagen (base64).
+	4.	Guardas esa URL (o subes la imagen a tu propio hosting/S3 y guardas el link) en recipe.i
+***********************************
+
+- PERMITIR QUE EL USARIO PUEDA CAMBIAR LA IMAGEN DE LA RECETA
+
+
+- QUE TE LLEVE A LA RECETA RECIEN CREADA (MIRAR ANIMACION)
+
+- QUE TE CREE VAARIAS RECETAS Y LUEGO ELIGES (FUTURO)
