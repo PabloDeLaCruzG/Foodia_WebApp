@@ -84,6 +84,8 @@ recipeRoutes.post(
 
 recipeRoutes.get("/", verifyToken, RecipeController.getAllRecipes);
 
+recipeRoutes.get("/author", verifyToken, authenticateUser, validateRequest, RecipeController.getRecipesByAuthor);
+
 recipeRoutes.get(
   "/:id",
   param("id").isMongoId().withMessage("ID inválido"),

@@ -6,27 +6,31 @@ import { useState, useEffect } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { ChevronDownIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import WizardModal from "../components/WizardModal";
+import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
   const [showWizard, setShowWizard] = useState(false);
+  const { user } = useAuth(); // Suponemos que aquí tienes el usuario con su _id
 
   useEffect(() => {
-    recipeApi
-      .getAllRecipes()
-      .then((recipes: IRecipe[]) => {
-        if (Array.isArray(recipes)) {
-          setRecipes(recipes);
-        } else {
-          console.error("API response is not an array:", recipes);
+    if (user && user._id) {
+      recipeApi
+        .getRecipesByAuthor(user._id)
+        .then((recipes: IRecipe[]) => {
+          if (Array.isArray(recipes)) {
+            setRecipes(recipes);
+          } else {
+            console.error("API response is not an array:", recipes);
+            setRecipes([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching recipes:", error);
           setRecipes([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching recipes:", error);
-        setRecipes([]);
-      });
-  }, []);
+        });
+    }
+  }, [user]);
 
   const openWizard = () => {
     setShowWizard(true);

@@ -8,10 +8,7 @@ import { GenerateRecipeBody } from "../interfaces/IGenerateRecipeBody";
 import { AuthRequest } from "../interfaces/AuthRequest";
 
 class RecipeController {
-  static generateRecipe = async (
-    req: AuthRequest,
-    res: Response
-  ) => {
+  static generateRecipe = async (req: AuthRequest, res: Response) => {
     try {
       const {
         selectedCuisines,
@@ -112,7 +109,7 @@ Please generate the JSON with no additional text or formatting outside the stric
       // 3. Obtener imagen desde el servicio
       const imageUrl = await ImageService.fetchFoodImage(recipeData.title);
 
-      const authorId = req.user!._id; 
+      const authorId = req.user!._id;
 
       console.log("ID del autor:", authorId);
 
@@ -144,6 +141,26 @@ Please generate the JSON with no additional text or formatting outside the stric
       res
         .status(500)
         .json({ message: "Controller: Error al obtener las recetas" });
+    }
+  };
+
+  static getRecipesByAuthor = async (req: AuthRequest, res: Response) => {
+    try {
+      const authorId = req.user!._id;
+      console.log("ID del autor:", authorId);
+      
+      if (!authorId) {
+        res.status(401).json({ message: "Usuario no autenticado" });
+        return;
+      }
+
+      const recipes = await Recipe.find({ authorId });
+      res.status(200).json(recipes);
+    } catch (error) {
+      console.error("Error al obtener recetas del autor:", error);
+      res
+        .status(500)
+        .json({ message: "Error al obtener las recetas del autor" });
     }
   };
 

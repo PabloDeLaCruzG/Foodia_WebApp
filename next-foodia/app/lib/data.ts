@@ -20,6 +20,21 @@ export const recipeApi = {
     }
   },
 
+  getRecipesByAuthor: async (authorId: string): Promise<IRecipe[]> => {
+    try {
+      const response = await axios.get(`${API_URL}/author`, {
+        params: {
+          authorId,
+        },
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener todas las recetas:", error);
+      throw error;
+    }
+  },
+
   /**
    * Obtiene una receta por su ID.
    * @param id ID de la receta a buscar
