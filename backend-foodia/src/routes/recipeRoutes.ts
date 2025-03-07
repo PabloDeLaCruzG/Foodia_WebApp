@@ -3,6 +3,7 @@ import { param, body } from "express-validator";
 import RecipeController from "../controllers/RecipeController";
 import { validateRequest } from "../middleware/validation";
 import verifyToken from "../middleware/auth";
+import authenticateUser from "../middleware/authenticateUser";
 
 const recipeRoutes = Router();
 
@@ -76,6 +77,7 @@ recipeRoutes.post(
     .isString()
     .withMessage("extraDetails debe ser un string"),
   verifyToken,
+  authenticateUser,
   validateRequest,
   RecipeController.generateRecipe
 );

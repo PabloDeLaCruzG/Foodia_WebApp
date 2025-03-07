@@ -2,41 +2,14 @@ import { Request, Response } from "express";
 import Recipe from "../models/Recipe";
 import { openai } from "../config/openai";
 import JSON5 from "json5";
+import { AIRecipeService } from "../services/aiRecipeService";
+import { ImageService } from "../services/imageService";
 import { GenerateRecipeBody } from "../interfaces/IGenerateRecipeBody";
-import { AIRecipeData } from "../interfaces/IAIRecipeData";
-import axios from "axios";
-import { translate } from "@vitalets/google-translate-api";
+import { AuthRequest } from "../interfaces/AuthRequest";
 
 class RecipeController {
-  // Funcion generar imagen de la receta
-  static fetchFoodImage = async (
-    recipeTitle: string
-  ): Promise<string | null> => {
-    try {
-      // Se traduce el título a inglés
-      const { text: translatedTitle } = await translate(recipeTitle, {
-        to: "en",
-      });
-
-      const pexelsApiKey = process.env.PEXELS_KEY;
-      const response = await axios.get("https://api.pexels.com/v1/search", {
-        params: { query: `food ${translatedTitle}`, per_page: 1 },
-        headers: { Authorization: pexelsApiKey },
-      });
-
-      if (response.data.photos.length > 0) {
-        return response.data.photos[0].src.medium;
-      }
-
-      return null;
-    } catch (error) {
-      console.error("Error al obtener imagen de Pexels:", error);
-      return null;
-    }
-  };
-
   static generateRecipe = async (
-    req: Request<{}, {}, GenerateRecipeBody>,
+    req: AuthRequest,
     res: Response
   ) => {
     try {
@@ -54,7 +27,7 @@ class RecipeController {
         extraDetails,
       } = req.body;
 
-      // Convertir arrays a cadenas para el prompt
+      // 1. Construir el prompt
       const cuisinesStr =
         selectedCuisines?.join(", ") || "no specific cuisines";
       const dietStr = dietRestrictions?.join(", ") || "no dietary restrictions";
@@ -62,7 +35,7 @@ class RecipeController {
       const excludeStr = ingredientsToExclude?.join(", ") || "none";
 
       const prompt = `
-  You are a culinary assistant. Generate a recipe that satisfies the following parameters:
+      You are a culinary assistant. Generate a recipe that satisfies the following parameters:
   - Cuisine types: ${cuisinesStr}.
   - Dietary restrictions: ${dietStr}.
   - Extra allergens: ${extraAllergens || "none"}.
@@ -130,68 +103,24 @@ For any ingredient object that is part of the generated recipe, ensure that:
 	•	unit: Is a non-empty string. If a specific unit is not available, do not leave it empty; assign a valid default value (for example, "to taste") to comply with the validation.
 
 Please generate the JSON with no additional text or formatting outside the strict JSON structure, and ensure that all fields follow the above restrictions exactly.
+      
       `;
 
-      // Llamada a la API de OpenAI
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a professional Chef with high creativity and expertise. Respond ONLY with JSON.",
-          },
-          { role: "user", content: prompt },
-        ],
-      });
+      // 2. Llamar al servicio de OpenAI
+      const recipeData = await AIRecipeService.generateRecipeFromPrompt(prompt);
 
-      // Extraer y limpiar la respuesta de OpenAI
-      const aiResult = response.choices[0]?.message?.content?.trim();
-      if (!aiResult) {
-        res.status(500).json({ message: "No se pudo generar la receta." });
-        return;
-      }
+      // 3. Obtener imagen desde el servicio
+      const imageUrl = await ImageService.fetchFoodImage(recipeData.title);
 
-      console.log("Respuesta de OpenAI:", aiResult);
+      const authorId = req.user!._id; 
 
-      // Limpiar los backticks y cualquier code fence
-      let cleanedResponse = aiResult.replace(/```/g, "").trim();
+      console.log("ID del autor:", authorId);
 
-      // Si es necesario, extraer solo la parte JSON (entre llaves)
-      const match = cleanedResponse.match(/\{[\s\S]*\}/);
-      if (match) {
-        cleanedResponse = match[0];
-      }
-
-      let recipeData: AIRecipeData;
-      try {
-        recipeData = JSON5.parse(cleanedResponse);
-      } catch (parseError) {
-        console.error("Error al parsear la respuesta de OpenAI:", parseError);
-        res.status(500).json({
-          message: "La respuesta de OpenAI no es un JSON válido",
-          error: parseError.message,
-        });
-        return;
-      }
-
-      console.log("Datos de la receta:", recipeData);
-
-      const imageUrl = await RecipeController.fetchFoodImage(recipeData.title);
-
-      // Crear el documento de la receta usando el nuevo esquema
+      // 4. Crear y guardar la receta
       const newRecipe = new Recipe({
-        title: recipeData.title,
-        description: recipeData.description,
-        cookingTime: recipeData.cookingTime,
-        difficulty: recipeData.difficulty,
-        costLevel: recipeData.costLevel,
-        cuisine: recipeData.cuisine,
-        nutritionalInfo: recipeData.nutritionalInfo,
-        ingredients: recipeData.ingredients,
-        steps: recipeData.steps,
-        imageUrl: imageUrl,
-        // En el futuro, podrías relacionar con el usuario: authorId: req.user.id
+        ...recipeData,
+        imageUrl,
+        authorId,
       });
 
       await newRecipe.save();

@@ -24,7 +24,7 @@ const verifyToken: RequestHandler = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-    (req as any).userId = decoded.id;
+    (req as any)._id = decoded.id;
 
     next();
   } catch (error) {

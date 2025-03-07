@@ -21,11 +21,11 @@ export interface IStep {
 export interface IRecipe extends Document {
   title: string;
   description: string;
-  cookingTime: number;       // minutos de cocción / preparación
-  difficulty: string;        // "Fácil", "Media", "Difícil", etc.
-  costLevel: string;         // "Barato", "Medio", "Caro"
-  cuisine: string;           // "Italiana", "Mexicana", "Americana", etc.
-  nutritionalInfo: INutritionalInfo; 
+  cookingTime: number; // minutos de cocción / preparación
+  difficulty: string; // "Fácil", "Media", "Difícil", etc.
+  costLevel: string; // "Barato", "Medio", "Caro"
+  cuisine: string; // "Italiana", "Mexicana", "Americana", etc.
+  nutritionalInfo: INutritionalInfo;
   ingredients: IIngredient[];
   steps: IStep[];
   authorId?: Types.ObjectId; // referencia a un usuario
@@ -39,66 +39,66 @@ const RecipeSchema = new Schema<IRecipe>(
     title: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     description: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     cookingTime: {
       type: Number,
-      required: true
+      required: true,
     },
     difficulty: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     costLevel: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     cuisine: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     nutritionalInfo: {
       type: {
         calories: { type: Number, required: true },
-        protein:  { type: Number, required: true },
-        fat:      { type: Number, required: true },
-        carbs:    { type: Number, required: true }
+        protein: { type: Number, required: true },
+        fat: { type: Number, required: true },
+        carbs: { type: Number, required: true },
       },
-      required: true
+      required: true,
     },
     ingredients: [
       {
         name: { type: String, required: true, trim: true },
         quantity: { type: Number, required: true },
-        unit: { type: String, required: true, trim: true }
-      }
+        unit: { type: String, required: true, trim: true },
+      },
     ],
     steps: [
       {
         stepNumber: { type: Number, required: true },
-        description: { type: String, required: true, trim: true }
-      }
+        description: { type: String, required: true, trim: true },
+      },
     ],
     imageUrl: {
       type: String,
-      required: false
+      required: false,
     },
     authorId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: false
-    }
+      required: true,
+    },
   },
   {
-    timestamps: true // crea createdAt y updatedAt automáticamente
+    timestamps: true, // crea createdAt y updatedAt automáticamente
   }
 );
 
