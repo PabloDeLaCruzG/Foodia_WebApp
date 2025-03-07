@@ -1,7 +1,8 @@
 import axios from "axios";
-import { GenerateRecipeBody, IRecipe } from "./interfaces";
+import { GenerateRecipeBody, IRecipe, IUser } from "./interfaces";
 
 const API_URL = "http://localhost:4000/api/recipes";
+const API_URL_AUTH = "http://localhost:4000/api/auth/";
 
 export const recipeApi = {
   /**
@@ -77,6 +78,41 @@ export const recipeApi = {
       return response.data;
     } catch (error) {
       console.error("Error al generar la receta:", error);
+      throw error;
+    }
+  },
+};
+
+export const authApi = {
+  /**
+   * Registra un usuario en el backend.
+   * @param user Datos del usuario a registrar
+   */
+  registerUser: async (user: IUser) => {
+    try {
+      const response = await axios.post(API_URL_AUTH + "register", user, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al registrar el usuario:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Loginea un usuario en el backend.
+   * @param user Datos del usuario a loginear
+   */
+  loginUser: async (user: IUser) => {
+    try {
+      const response = await axios.post(API_URL_AUTH + "login", user, {
+        withCredentials: true,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al loginear el usuario:", error);
       throw error;
     }
   },

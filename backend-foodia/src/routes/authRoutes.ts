@@ -5,6 +5,7 @@ import { validateRequest } from "../middleware/validation";
 
 const router = Router();
 
+// POST /api/auth/register
 router.post(
   "/register",
   body("name").notEmpty().withMessage("El nombre es requerido"),
@@ -16,6 +17,7 @@ router.post(
   AuthController.register
 );
 
+// POST /api/auth/login
 router.post(
   "/login",
   body("email").isEmail().withMessage("Email inválido"),
