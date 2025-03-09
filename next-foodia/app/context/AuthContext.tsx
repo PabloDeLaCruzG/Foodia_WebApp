@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import axios from "axios";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
 
 // Define la interfaz para el usuario
 interface IUser {
@@ -21,15 +28,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Puedes obtener el usuario desde localStorage, cookies o llamando a un endpoint
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user from storage:", error);
-      }
-    }
+    axios
+      .get("http://localhost:4000/api/auth/user", { withCredentials: true })
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch((error) => {
+        console.error("Error obteniendo el usuario:", error);
+      });
   }, []);
 
   return (

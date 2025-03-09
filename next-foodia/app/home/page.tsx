@@ -11,7 +11,9 @@ import { useAuth } from "../context/AuthContext";
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
   const [showWizard, setShowWizard] = useState(false);
-  const { user } = useAuth(); // Suponemos que aquí tienes el usuario con su _id
+  const { user } = useAuth();
+
+  //console.log("user: ", user);
 
   useEffect(() => {
     if (user && user._id) {

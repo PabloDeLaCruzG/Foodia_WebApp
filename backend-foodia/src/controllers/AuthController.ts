@@ -93,11 +93,40 @@ class AuthController {
         maxAge: 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({ message: "Inicio de sesión exitoso", token: token });
+      res
+        .status(200)
+        .json({ message: "Inicio de sesión exitoso", token: token });
       return;
     } catch (error) {
       console.error("Error en login:", error);
       res.status(500).json({ message: "Error al iniciar sesión" });
+      return;
+    }
+  };
+
+  static getCurrentUser = async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        res.status(401).json({ message: "No se encontró el token" });
+        return;
+      }
+
+      // Verificar si el token es válido
+      const { id } = jwt.verify(token, JWT_SECRET) as { id: string };
+
+      // Buscar el usuario
+      const user = await User.findById(id);
+      if (!user) {
+        res.status(401).json({ message: "No se encontró el usuario" });
+        return;
+      }
+
+      res.status(200).json(user);
+      return;
+    } catch (error) {
+      console.error("Error en getCurrentUser:", error);
+      res.status(500).json({ message: "Error al obtener el usuario" });
       return;
     }
   };

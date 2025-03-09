@@ -26,6 +26,7 @@ export const recipeApi = {
         params: {
           authorId,
         },
+        withCredentials: true,
       });
       console.log(response.data);
       return response.data;
@@ -41,7 +42,9 @@ export const recipeApi = {
    */
   getRecipeById: async (id: string): Promise<IRecipe> => {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const response = await axios.get(`${API_URL}/${id}`, {
+        withCredentials: true,
+      });
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -56,7 +59,9 @@ export const recipeApi = {
    */
   deleteRecipeById: async (id: string) => {
     try {
-      const response = await axios.delete(`${API_URL}/${id}`);
+      const response = await axios.delete(`${API_URL}/${id}`, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       console.error(`Error al eliminar la receta con ID ${id}:`, error);
@@ -70,7 +75,9 @@ export const recipeApi = {
    */
   createRecipe: async (recipe: IRecipe) => {
     try {
-      const response = await axios.post(API_URL, recipe);
+      const response = await axios.post(API_URL, recipe, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       console.error("Error al crear la receta:", error);
@@ -89,6 +96,7 @@ export const recipeApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {

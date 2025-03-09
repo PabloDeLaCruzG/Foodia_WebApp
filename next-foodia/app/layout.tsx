@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Foodia Generator",
@@ -14,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

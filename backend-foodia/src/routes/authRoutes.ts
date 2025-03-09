@@ -26,4 +26,6 @@ router.post(
   AuthController.login
 );
 
+router.get("/user", AuthController.getCurrentUser);
+
 export default router;

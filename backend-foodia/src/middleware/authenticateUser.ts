@@ -8,7 +8,8 @@ export default function authenticateUser(
   next: NextFunction
 ) {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.token; // <<--- LEER DESDE LA COOKIE
+
     if (!token) {
       res.status(401).json({ message: "No token provided" });
       return;
@@ -17,8 +18,6 @@ export default function authenticateUser(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: string;
     };
-    console.log("Decoded token:", decoded);
-
     req.user = { _id: decoded.id };
 
     next();
