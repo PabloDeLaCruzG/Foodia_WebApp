@@ -15,7 +15,7 @@ export default function HomeLayout({
       <div className="relative min-h-screen">
         {/* Navbar */}
         <div className="px-4 py-2 text-center flex justify-between border-b border-gray-200">
-          <h4 className="font-bold text-2xl text-gray-900">ListRecipe</h4>
+          <h4 className="font-bold text-2xl text-gray-900">Food With AI (FoodWai)</h4>
 
           {/* Botón para abrir el menú */}
           <button onClick={() => setMenuOpen(true)} className="p-2">
