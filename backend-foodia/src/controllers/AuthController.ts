@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ class AuthController {
   // --------------------------------------------------------------------------------------
   static register = async (req: Request, res: Response) => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password } = req.body as IUser;
 
       // Verificar si ya existe un usuario con ese email
       const existingUser = await User.findOne({ email });
@@ -127,6 +127,25 @@ class AuthController {
     } catch (error) {
       console.error("Error en getCurrentUser:", error);
       res.status(500).json({ message: "Error al obtener el usuario" });
+      return;
+    }
+  };
+
+  static checkEmailExists = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        res.status(200).json({ exists: false });
+        return;
+      }
+
+      res.status(200).json({ exists: true });
+      return;
+    } catch (error) {
+      console.error("Error en checkEmailExists:", error);
+      res.status(500).json({ message: "Error al verificar el email" });
       return;
     }
   };

@@ -139,4 +139,21 @@ export const authApi = {
       throw error;
     }
   },
+
+  /**
+   * Verifica si un email existe en la base de datos.
+   * @param email Email a verificar
+   */
+  checkEmailExists: async (email: string) => {
+    try {
+      const response = await axios.post(API_URL_AUTH + "checkEmailExists", {
+        email,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al verificar el email:", error);
+      throw error;
+    }
+  },
 };

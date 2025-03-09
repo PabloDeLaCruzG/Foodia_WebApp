@@ -8,7 +8,6 @@ const router = Router();
 // POST /api/auth/register
 router.post(
   "/register",
-  body("name").notEmpty().withMessage("El nombre es requerido"),
   body("email").isEmail().withMessage("Debe proporcionar un email válido"),
   body("password")
     .isLength({ min: 6 })
@@ -27,5 +26,7 @@ router.post(
 );
 
 router.get("/user", AuthController.getCurrentUser);
+
+router.post("/checkEmailExists", validateRequest, AuthController.checkEmailExists);
 
 export default router;
