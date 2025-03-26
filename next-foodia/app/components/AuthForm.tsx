@@ -22,14 +22,20 @@ export default function AuthForm() {
       const res = await authApi.checkEmailExists(email);
       if (res.exists) {
         setMode("login");
-        setStep("password");
       } else {
         setMode("register");
-        setStep("password");
       }
+      setStep("password");
     } catch (error) {
-      console.error("Error verificando el email:", error);
-      setErrorMsg("Error verificando el email.");
+      // Si la petición falla por "email no encontrado" (por ejemplo, 404),
+      // asumimos que se trata de un registro.
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        setMode("register");
+        setStep("password");
+      } else {
+        console.error("Error verificando el email:", error);
+        setErrorMsg("Error verificando el email.");
+      }
     } finally {
       setLoading(false);
     }
@@ -80,7 +86,7 @@ export default function AuthForm() {
 
       <div className="flex text-center items-center my-4 w-full">
         <hr className="w-full border-gray-300" />
-        <span className=" px-2 text-gray-500">OR</span>
+        <span className="px-2 text-gray-500">OR</span>
         <hr className="w-full border-gray-300" />
       </div>
 
@@ -93,7 +99,7 @@ export default function AuthForm() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+          className="border text-gray-900 rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
           required
           disabled={step === "password"}
         />
@@ -131,7 +137,7 @@ export default function AuthForm() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition mb-3"
+                className="border text-gray-900 rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition mb-3"
                 required
               />
             </div>
