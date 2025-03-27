@@ -149,7 +149,7 @@ export const authApi = {
       const response = await axios.post(API_URL_AUTH + "checkEmailExists", {
         email,
       });
-
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error al verificar el email:", error);

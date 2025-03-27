@@ -5,6 +5,14 @@ import { validateRequest } from "../middleware/validation";
 
 const router = Router();
 
+router.post(
+  "/google",
+  body("idToken")
+    .isString()
+    .withMessage("Debe proporcionar un token de Google"),
+  validateRequest,
+  AuthController.googleAuth
+);
 // POST /api/auth/register
 router.post(
   "/register",
@@ -27,6 +35,10 @@ router.post(
 
 router.get("/user", AuthController.getCurrentUser);
 
-router.post("/checkEmailExists", validateRequest, AuthController.checkEmailExists);
+router.post(
+  "/checkEmailExists",
+  validateRequest,
+  AuthController.checkEmailExists
+);
 
 export default router;

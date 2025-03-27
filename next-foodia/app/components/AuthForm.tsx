@@ -19,7 +19,9 @@ export default function AuthForm() {
     setErrorMsg(null);
     setLoading(true);
     try {
+      console.log("C PRE CHECK: ");
       const res = await authApi.checkEmailExists(email);
+      console.log("RESPONSE 2: ", res);
       if (res.exists) {
         setMode("login");
       } else {
@@ -46,10 +48,13 @@ export default function AuthForm() {
     setErrorMsg(null);
     setLoading(true);
 
+    console.log("C PRE SUBMIT: ");
     try {
       if (mode === "login") {
+        console.log("LOGIN");
         await authApi.loginUser({ email, password });
       } else {
+        console.log("REGISTER");
         await authApi.registerUser({ email, password });
       }
       router.push("/home");
@@ -99,6 +104,11 @@ export default function AuthForm() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => {
+            if (step === "initial" && e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
           className="border text-gray-900 rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
           required
           disabled={step === "password"}
