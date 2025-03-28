@@ -1,10 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-
 export interface IUser extends Document {
   name?: string;
   email: string;
-  password: string;
+  password?: string;
+  authProvider?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -14,20 +13,25 @@ const userSchema = new Schema<IUser>(
     name: {
       type: String,
       required: false,
-      trim: true
+      trim: true,
     },
     email: {
       type: String,
-      required: [true, 'El email es obligatorio'],
+      required: [true, "El email es obligatorio"],
       unique: true,
       trim: true,
-      lowercase: true
+      lowercase: true,
     },
     password: {
       type: String,
-      required: [true, 'La contraseña es obligatoria'],
-      trim: true
-    }
+      required: false,
+      trim: true,
+    },
+    authProvider: {
+      type: String,
+      required: false,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

@@ -1,9 +1,12 @@
 "use client";
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import AuthForm from "./components/AuthForm";
 import FeatureSection from "./components/FeatureSection";
 
 export default function Landing() {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Barra de navegación */}
@@ -54,9 +57,11 @@ export default function Landing() {
           {/* Formulario de login/registro con fondo diferente */}
           <div
             id="auth-section"
-            className="bg-orange-50 border border-orange-200 p-6 rounded-lg shadow-lg w-full max-w-md md:flex-1 animate-slide-in"
+            className="bg-white border p-6 rounded-3xl shadow-lg w-full max-w-md md:flex-1 animate-slide-in"
           >
-            <AuthForm />
+            <GoogleOAuthProvider clientId={clientId}>
+              <AuthForm />
+            </GoogleOAuthProvider>
           </div>
         </div>
       </section>

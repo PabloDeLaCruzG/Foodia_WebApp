@@ -13,7 +13,7 @@ export default function Home() {
   const [showWizard, setShowWizard] = useState(false);
   const { user } = useAuth();
 
-  //console.log("user: ", user);
+  console.log("user: ", user);
 
   useEffect(() => {
     if (user && user._id) {

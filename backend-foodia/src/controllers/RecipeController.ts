@@ -148,7 +148,7 @@ Please generate the JSON with no additional text or formatting outside the stric
     try {
       const authorId = req.user!._id;
       console.log("ID del autor:", authorId);
-      
+
       if (!authorId) {
         res.status(401).json({ message: "Usuario no autenticado" });
         return;
@@ -172,6 +172,7 @@ Please generate the JSON with no additional text or formatting outside the stric
         res.status(404).json({ message: "No se encontró la receta" });
         return;
       }
+
       res.status(200).json(recipe);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener la receta" });

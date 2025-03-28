@@ -98,6 +98,7 @@ export const recipeApi = {
         },
         withCredentials: true,
       });
+      console.log("response: ", response.data);
       return response.data;
     } catch (error) {
       console.error("Error al generar la receta:", error);
@@ -107,6 +108,21 @@ export const recipeApi = {
 };
 
 export const authApi = {
+  googleAuth: async (idToken: string) => {
+    try {
+      const response = await axios.post(
+        API_URL_AUTH + "google",
+        {
+          idToken,
+        },
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google:", error);
+      throw error;
+    }
+  },
   /**
    * Registra un usuario en el backend.
    * @param user Datos del usuario a registrar
@@ -136,6 +152,19 @@ export const authApi = {
       return response.data;
     } catch (error) {
       console.error("Error al loginear el usuario:", error);
+      throw error;
+    }
+  },
+
+  logoutUser: async () => {
+    try {
+      const response = await axios.post(API_URL_AUTH + "logout", {}, {
+        withCredentials: true,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
       throw error;
     }
   },

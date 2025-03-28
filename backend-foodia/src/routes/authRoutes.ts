@@ -33,6 +33,8 @@ router.post(
   AuthController.login
 );
 
+router.post("/logout", AuthController.logout);
+
 router.get("/user", AuthController.getCurrentUser);
 
 router.post(

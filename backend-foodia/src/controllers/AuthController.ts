@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User, { IUser } from "../models/User";
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 dotenv.config();
@@ -12,11 +12,10 @@ const JWT_SECRET: string = process.env.JWT_SECRET || "secret";
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "1d";
 
 class AuthController {
-
   static googleAuth = async (req: Request, res: Response) => {
-    try{
-      const { idToken } = req.body
-      if(!idToken){
+    try {
+      const { idToken } = req.body;
+      if (!idToken) {
         res.status(400).json({ error: "No se recibió el token de Google" });
         return;
       }
@@ -30,12 +29,11 @@ class AuthController {
       const { email, name } = payload;
 
       let user = await User.findOne({ email });
-      if(!user){
+      if (!user) {
         user = new User({
           name,
           email,
-          password: null,
-          authProvider: 'google',
+          authProvider: "google",
         });
         await user.save();
       }
@@ -44,19 +42,29 @@ class AuthController {
         expiresIn: JWT_EXPIRES_IN,
       } as jwt.SignOptions);
 
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
       res.status(200).json({ token, user });
     } catch (error) {
       console.error("Error en googleAuth:", error);
       res.status(500).json({ message: "Error al iniciar sesión" });
       return;
     }
-  }
+  };
   // --------------------------------------------------------------------------------------
   // REGISTRO
   // --------------------------------------------------------------------------------------
   static register = async (req: Request, res: Response) => {
     try {
-      const { name, email, password } = req.body as IUser;
+      const { email, password } = req.body as IUser;
+
+      // Le asigna el nombre del usuario a partir del email
+      const name = email.split("@")[0];
 
       // Verificar si ya existe un usuario con ese email
       const existingUser = await User.findOne({ email });
@@ -73,6 +81,7 @@ class AuthController {
         name,
         email,
         password: hashedPassword,
+        authProvider: "local",
       });
       await newUser.save();
 
@@ -145,6 +154,12 @@ class AuthController {
     }
   };
 
+  static logout = async (req: Request, res: Response) => {
+    res.clearCookie("token");
+    res.status(200).json({ message: "Sesión cerrada correctamente" });
+    return;
+  };
+
   static getCurrentUser = async (req: Request, res: Response) => {
     try {
       const token = req.cookies.token;
@@ -182,7 +197,9 @@ class AuthController {
         return;
       }
 
-      res.status(200).json({ exists: true });
+      res
+        .status(200)
+        .json({ exists: true, authProvider: user.authProvider || "local" });
       return;
     } catch (error) {
       console.error("Error en checkEmailExists:", error);

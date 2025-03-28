@@ -4,7 +4,11 @@ import { useState } from "react";
 import { authApi } from "../lib/data";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { FcGoogle } from "react-icons/fc";
+
+import { GoogleLogin } from "@react-oauth/google";
+
+// Se usaría para tener en cuenta el usuario en el landing, si está registrado mostrar su nombre en lugar del formulario de login
+// import { useAuth } from "../context/AuthContext";
 
 export default function AuthForm() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -13,7 +17,21 @@ export default function AuthForm() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
+
+  // const { setUser } = useAuth(); // Si deseas actualizar el usuario en un contexto
+
+  const handleGoogleAuth = async (idToken: string) => {
+    try {
+      const res = await authApi.googleAuth(idToken);
+      console.log("Usuario (googleLogin): ", res.user);
+      // setUser(res.user); // Si usas AuthContext
+      router.push("/home");
+    } catch (error) {
+      console.error("Error en autenticación con Google", error);
+    }
+  };
 
   const checkEmail = async () => {
     setErrorMsg(null);
@@ -23,14 +41,21 @@ export default function AuthForm() {
       const res = await authApi.checkEmailExists(email);
       console.log("RESPONSE 2: ", res);
       if (res.exists) {
-        setMode("login");
+        if (res.authProvider === "google") {
+          // Opción A: mostrar un mensaje y forzar a usar Google
+          setErrorMsg(
+            "Esta cuenta está registrada con Google. Inicia sesión con Google."
+          );
+
+          return; // Evitamos avanzar a la fase de password
+        } else {
+          setMode("login");
+        }
       } else {
         setMode("register");
       }
       setStep("password");
     } catch (error) {
-      // Si la petición falla por "email no encontrado" (por ejemplo, 404),
-      // asumimos que se trata de un registro.
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         setMode("register");
         setStep("password");
@@ -52,10 +77,14 @@ export default function AuthForm() {
     try {
       if (mode === "login") {
         console.log("LOGIN");
-        await authApi.loginUser({ email, password });
+        const res = await authApi.loginUser({ email, password });
+        console.log("Usuario (Login handleSubmit): ", res.user);
+        // setUser(res.user);
       } else {
         console.log("REGISTER");
-        await authApi.registerUser({ email, password });
+        const res = await authApi.registerUser({ email, password });
+        console.log("Usuario ( RegisterhandleSubmit): ", res.user);
+        // setUser(res.user);
       }
       router.push("/home");
     } catch (error) {
@@ -83,11 +112,20 @@ export default function AuthForm() {
           Crea tu cuenta para comenzar a disfrutar de infinitas recetas.
         </p>
       )}
-
-      <button className="w-full flex items-center justify-center gap-2 border py-2 px-4 rounded text-gray-700 hover:bg-gray-100 transition">
-        <FcGoogle size={20} />{" "}
-        {mode === "login" ? "Usar Google" : "Registrarse con Google"}
-      </button>
+      <div className="w-full flex items-center justify-center gap-2 mb-2">
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            // credentialResponse.credential es el idToken
+            const idToken = credentialResponse.credential;
+            if (idToken) {
+              handleGoogleAuth(idToken);
+            }
+          }}
+          onError={() => {
+            console.error("Error en login de Google");
+          }}
+        />
+      </div>
 
       <div className="flex text-center items-center my-4 w-full">
         <hr className="w-full border-gray-300" />

@@ -8,7 +8,7 @@ export default function authenticateUser(
   next: NextFunction
 ) {
   try {
-    const token = req.cookies.token; // <<--- LEER DESDE LA COOKIE
+    const token = req.cookies.token; 
 
     if (!token) {
       res.status(401).json({ message: "No token provided" });
