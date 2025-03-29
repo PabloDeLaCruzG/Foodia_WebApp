@@ -31,10 +31,13 @@ export default function HomeLayout({
       <AuthProvider>
         <div className="relative min-h-screen">
           {/* Navbar */}
-          <div className="px-4 py-2 text-center flex justify-between border-b border-gray-200">
+          <div className="px-6 py-3 flex items-center justify-between bg-white shadow-md">
             <h4 className="font-bold text-2xl text-gray-900">
               Food With AI (FoodWai)
             </h4>
+            <p className="ml-2 text-sm text-gray-500 hidden sm:block">
+              Descubre y crea recetas con inteligencia artificial
+            </p>
 
             {/* Botón para abrir el menú */}
             <button onClick={() => setMenuOpen(true)} className="p-2">
@@ -53,7 +56,7 @@ export default function HomeLayout({
 
               {/* Sidebar */}
               <div
-                className={`rounded-tl-lg rounded-bl-lg fixed right-0 top-0 h-full w-80 bg-[#F9FAFB] shadow-xl transform transition-all duration-500 ease-out ${
+                className={`rounded-l-lg fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform transition-all duration-500 ease-out ${
                   menuOpen
                     ? "translate-x-0 opacity-100"
                     : "translate-x-full opacity-0"
@@ -91,9 +94,9 @@ export default function HomeLayout({
 
           {/* Contenido principal */}
           <div
-            className={`grid grid-cols-[auto] ${
+            className={`transition-all duration-300 ${
               menuOpen ? "brightness-75 pointer-events-none" : ""
-            }`}
+            } px-4 md:px-6`}
           >
             {children}
           </div>
