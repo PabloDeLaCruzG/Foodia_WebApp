@@ -10,12 +10,13 @@ import { useRouter } from "next/navigation";
 
 export default function HomeLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
-
   const router = useRouter();
+
   const handleLogout = async () => {
     try {
       await authApi.logoutUser();
@@ -30,31 +31,26 @@ export default function HomeLayout({
     <GoogleOAuthProvider clientId={clientId}>
       <AuthProvider>
         <div className="relative min-h-screen">
-          {/* Navbar */}
-          <div className="px-6 py-3 flex items-center justify-between bg-white shadow-md">
+          {/* Navbar fijo */}
+          <header className="fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between bg-white shadow-md">
             <h4 className="font-bold text-2xl text-gray-900">
               Food With AI (FoodWai)
             </h4>
             <p className="ml-2 text-sm text-gray-500 hidden sm:block">
               Descubre y crea recetas con inteligencia artificial
             </p>
-
-            {/* Botón para abrir el menú */}
             <button onClick={() => setMenuOpen(true)} className="p-2">
               <Bars3Icon className="w-6 h-6 text-gray-900" />
             </button>
-          </div>
+          </header>
 
-          {/* Overlay y Sidebar */}
+          {/* Overlay y Sidebar (menú responsivo) */}
           {menuOpen && (
             <>
-              {/* Overlay con oscurecimiento sutil */}
               <div
                 className="fixed inset-0 bg-black bg-opacity-30 transition-opacity duration-300"
                 onClick={() => setMenuOpen(false)}
               />
-
-              {/* Sidebar */}
               <div
                 className={`rounded-l-lg fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform transition-all duration-500 ease-out ${
                   menuOpen
@@ -70,7 +66,6 @@ export default function HomeLayout({
                     <XMarkIcon className="w-6 h-6 text-gray-900" />
                   </button>
                 </div>
-
                 <ul className="p-4 space-y-2">
                   <li className="text-gray-700 hover:text-gray-900 cursor-pointer">
                     Inicio
@@ -92,14 +87,8 @@ export default function HomeLayout({
             </>
           )}
 
-          {/* Contenido principal */}
-          <div
-            className={`transition-all duration-300 ${
-              menuOpen ? "brightness-75 pointer-events-none" : ""
-            } px-4 md:px-6`}
-          >
-            {children}
-          </div>
+          {/* Contenedor principal: se deja un padding-top para no quedar tapado por el navbar */}
+          <div className="pt-16">{children}</div>
         </div>
       </AuthProvider>
     </GoogleOAuthProvider>

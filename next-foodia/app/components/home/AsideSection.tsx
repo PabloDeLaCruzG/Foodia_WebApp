@@ -1,68 +1,59 @@
-"use client"; // Si vas a usar hooks, slick, etc. en este componente
+"use client";
 
-import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import { recommendedRecipes } from "../../lib/recommendRecipes";
+import { funFacts } from "../../lib/funFacts";
 import Image from "next/image";
+import { recipeApi } from "@/app/lib/data";
+import { useAuth } from "@/app/context/AuthContext";
+import { IRecipe } from "@/app/lib/interfaces";
 
-const funFacts = [
-  {
-    id: "fact-1",
-    text: "¿Sabías que la cocina japonesa ha sido declarada Patrimonio Cultural Inmaterial de la Humanidad por la UNESCO?",
-    likes: 0,
-  },
-  {
-    id: "fact-2",
-    text: "Se estima que existen más de 100 tipos de pasta en todo el mundo, cada una con su forma y nombre distintivos.",
-    likes: 0,
-  },
-  {
-    id: "fact-3",
-    text: "Esta receta de ‘Hot Honey Chicken’ está dando la vuelta al mundo. ¡Pruébala y cuéntanos qué tal!",
-    likes: 0,
-  },
-];
+interface IAsideSectionProps {
+  onRecipeSave: () => void;
+}
 
-export default function AsideSection() {
-  const [currentFunFactIndex, setCurrentFunFactIndex] = useState(0);
+export default function AsideSection({ onRecipeSave }: IAsideSectionProps) {
+  const currentUserId = useAuth().user?._id;
 
-  useEffect(() => {
-    if (funFacts.length > 0) {
-      const randomIndex = Math.floor(Math.random() * funFacts.length);
-      setCurrentFunFactIndex(randomIndex);
+  const handleSaveRecommendedRecipe = async (
+    recipe: IRecipe & { id?: string }
+  ) => {
+    // Creamos una copia y añadimos authorId (eliminando la propiedad id)
+    const newRecipe = { ...recipe, authorId: currentUserId };
+    delete newRecipe.id;
+
+    try {
+      console.log("Guardando receta...: ", newRecipe);
+      const result = await recipeApi.createRecipe(newRecipe);
+      console.log("Receta guardada:", result);
+      onRecipeSave();
+    } catch (error) {
+      console.error("Error al guardar la receta:", error);
     }
-  }, []);
-
-  const handleSaveRecommendedRecipe = (id: string) => {
-    console.log(`Save recommended recipe with id: ${id}`);
-    // Lógica para guardar receta (API, etc.)
   };
 
-  // Opciones de configuración para react-slick
   const carouselSettings = {
-    dots: true, // Muestra paginación (puntitos)
-    infinite: true, // Permite que el carrusel haga loop
-    speed: 500, // Velocidad de transición en ms
-    slidesToShow: 1, // Número de slides visibles a la vez
-    slidesToScroll: 1, // De a cuántos slides avanza
-    adaptiveHeight: true, // Ajusta la altura al contenido
-    arrows: false, // Si quieres ocultar flechas, etc.
-    autoplay: true, // Si deseas que se deslice solo
-    autoplaySpeed: 5000, // Intervalo en ms para autoplay
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+    arrows: false,
+    autoplay: true,
+    autoplaySpeed: 7000,
   };
 
   return (
     <>
-      {/* Sección de Recetas en Carrusel */}
       <div>
         <h2 className="text-lg font-bold mb-2">Recetas sugeridas</h2>
         <Slider {...carouselSettings}>
           {recommendedRecipes.map((rec) => (
             <div
               key={rec.id}
-              className="border rounded-2xl bg-white shadow-md max-w-xs overflow-hidden"
+              className="border rounded-2xl bg-white shadow-md max-w-xs overflow-hidden relative"
             >
-              {/* Imagen */}
               <Image
                 src={rec.imageUrl}
                 alt={rec.title}
@@ -70,29 +61,32 @@ export default function AsideSection() {
                 width={400}
                 height={300}
               />
-
-              {/* Contenido */}
-              <div className="p-4">
+              <button
+                onClick={() => handleSaveRecommendedRecipe(rec)}
+                className="absolute bottom-2 right-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-600 transition-colors"
+              >
+                +
+              </button>
+              <div className="p-4 pr-6">
                 <h3 className="text-lg font-semibold mb-1">{rec.title}</h3>
                 <p className="text-sm text-gray-700 mb-2">{rec.description}</p>
-                <button
-                  onClick={() => handleSaveRecommendedRecipe(rec.id)}
-                  className="bg-orange-500 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-orange-600"
-                >
-                  +
-                </button>
               </div>
             </div>
           ))}
         </Slider>
       </div>
-
-      {/* Sección Curiosidades */}
       <div className="mt-8">
         <h2 className="text-lg font-bold mb-2">Curiosidades</h2>
-        <p className="text-gray-700 text-sm">
-          {funFacts[currentFunFactIndex].text}
-        </p>
+        <Slider {...carouselSettings}>
+          {funFacts.map((fact, index) => (
+            <div
+              key={index}
+              className="border rounded-2xl p-2 bg-white shadow-md max-w-xs overflow-hidden"
+            >
+              <p className="text-gray-700 text-sm">{fact.text}</p>
+            </div>
+          ))}
+        </Slider>
       </div>
     </>
   );

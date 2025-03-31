@@ -149,12 +149,14 @@ Please generate the JSON with no additional text or formatting outside the stric
       const authorId = req.user!._id;
       console.log("ID del autor:", authorId);
 
+      console.log("USER:", req.user);
+
       if (!authorId) {
         res.status(401).json({ message: "Usuario no autenticado" });
         return;
       }
 
-      const recipes = await Recipe.find({ authorId });
+      const recipes = (await Recipe.find({ authorId }).sort({ updatedAt: -1 }));
       res.status(200).json(recipes);
     } catch (error) {
       console.error("Error al obtener recetas del autor:", error);
