@@ -2,20 +2,56 @@
 
 import "../globals.css";
 import { useState } from "react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { authApi } from "../lib/data";
 import { useRouter } from "next/navigation";
+// icono configuracion
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
 
 export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
   const router = useRouter();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  return (
+    <GoogleOAuthProvider clientId={clientId}>
+      <AuthProvider>
+        <InnerLayout
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          router={router}
+        >
+          {children}
+        </InnerLayout>
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  );
+}
+
+{
+  /* La funcion se crea porque los hooks con contexto se tienen que llamar 
+  en componentes que esten dentro del proveedor, Antes saltaba el error 
+  "seAuth must be used within an AuthProvider" porque useAuth se renderizaba
+  antes que el proveedor. Ahora al separar se garantice que useAuth se llame
+  cuando ya ha sido envuelto por el proveedor */
+}
+function InnerLayout({
+  children,
+  dropdownOpen,
+  setDropdownOpen,
+  router,
+}: {
+  children: React.ReactNode;
+  dropdownOpen: boolean;
+  setDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  router: ReturnType<typeof useRouter>;
+}) {
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -28,69 +64,44 @@ export default function HomeLayout({
   };
 
   return (
-    <GoogleOAuthProvider clientId={clientId}>
-      <AuthProvider>
-        <div className="relative min-h-screen">
-          {/* Navbar fijo */}
-          <header className="fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between bg-white shadow-md">
-            <h4 className="font-bold text-2xl text-gray-900">
-              Food With AI (FoodWai)
-            </h4>
-            <p className="ml-2 text-sm text-gray-500 hidden sm:block">
-              Descubre y crea recetas con inteligencia artificial
-            </p>
-            <button onClick={() => setMenuOpen(true)} className="p-2">
-              <Bars3Icon className="w-6 h-6 text-gray-900" />
-            </button>
-          </header>
+    <div className="relative min-h-screen">
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between bg-white shadow-md">
+        <div className="flex items-center">
+          <h4 className="font-bold text-2xl text-gray-900">
+            Food With AI (FoodWai)
+          </h4>
+          <p className="ml-2 text-sm text-gray-500 hidden sm:block">
+            Descubre y crea recetas con inteligencia artificial
+          </p>
+        </div>
 
-          {/* Overlay y Sidebar (menú responsivo) */}
-          {menuOpen && (
-            <>
-              <div
-                className="fixed inset-0 bg-black bg-opacity-30 transition-opacity duration-300"
-                onClick={() => setMenuOpen(false)}
-              />
-              <div
-                className={`rounded-l-lg fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform transition-all duration-500 ease-out ${
-                  menuOpen
-                    ? "translate-x-0 opacity-100"
-                    : "translate-x-full opacity-0"
-                } z-50`}
-              >
-                <div className="p-4 border-b flex justify-between items-center">
-                  <h4 className="font-bold text-lg text-gray-900">
-                    Nombre de usuario
-                  </h4>
-                  <button onClick={() => setMenuOpen(false)}>
-                    <XMarkIcon className="w-6 h-6 text-gray-900" />
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className="p-2 flex items-center space-x-2"
+          >
+            <AdjustmentsHorizontalIcon className="w-6 h-6" />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute top-full right-0 mt-2 z-50">
+              <div className="relative">
+                {/* Outer arrow for border */}
+                <div className="absolute right-2 -top-2 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-200"></div>
+                <div className="max-w-64 min-w-52 bg-white border border-gray-200 rounded shadow-xl">
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-gray-700 hover:text-red-500 transition-colors"
+                  >
+                    Cerrar la sesión de {user?.name || user?.email}
                   </button>
                 </div>
-                <ul className="p-4 space-y-2">
-                  <li className="text-gray-700 hover:text-gray-900 cursor-pointer">
-                    Inicio
-                  </li>
-                  <li className="text-gray-700 hover:text-gray-900 cursor-pointer">
-                    Recetas
-                  </li>
-                  <li className="text-gray-700 hover:text-gray-900 cursor-pointer">
-                    Perfil
-                  </li>
-                  <li
-                    className="text-gray-700 hover:text-gray-900 cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    Cerrar Sesión
-                  </li>
-                </ul>
               </div>
-            </>
+            </div>
           )}
-
-          {/* Contenedor principal: se deja un padding-top para no quedar tapado por el navbar */}
-          <div className="pt-16">{children}</div>
         </div>
-      </AuthProvider>
-    </GoogleOAuthProvider>
+      </header>
+
+      <div className="pt-16">{children}</div>
+    </div>
   );
 }
