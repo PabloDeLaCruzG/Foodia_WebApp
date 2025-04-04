@@ -8,6 +8,7 @@ import { authApi } from "../lib/data";
 import { useRouter } from "next/navigation";
 // icono configuracion
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
 
 export default function HomeLayout({
   children,
@@ -66,14 +67,24 @@ function InnerLayout({
   return (
     <div className="relative min-h-screen">
       <header className="fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between bg-white shadow-md">
-        <div className="flex items-center">
-          <h4 className="font-bold text-2xl text-gray-900">
-            Food With AI (FoodWai)
-          </h4>
-          <p className="ml-2 text-sm text-gray-500 hidden sm:block">
-            Descubre y crea recetas con inteligencia artificial
-          </p>
+        <div className="flex items-center gap-2">
+          <Image
+            src="/FoodwaiLogo.png"
+            alt="Logo de FoodWai"
+            width={50}
+            height={50}
+          />
+          {/* <h1 className="text-2xl font-bold text-gray-900">FoodWai</h1> */}
+          <Image
+            src="/Foodwai.png"
+            alt="Logo de FoodWai"
+            width={100}
+            height={50}
+          />
         </div>
+        <p className="ml-2 text-sm text-gray-500 hidden sm:block">
+          Descubre y crea recetas con inteligencia artificial
+        </p>
 
         <div className="relative">
           <button
