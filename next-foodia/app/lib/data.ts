@@ -3,6 +3,7 @@ import { GenerateRecipeBody, IRecipe, IUser } from "./interfaces";
 
 const API_URL = "http://localhost:4000/api/recipes";
 const API_URL_AUTH = "http://localhost:4000/api/auth/";
+const API_URL_USER = "http://localhost:4000/api/users/";
 
 export const recipeApi = {
   /**
@@ -158,9 +159,13 @@ export const authApi = {
 
   logoutUser: async () => {
     try {
-      const response = await axios.post(API_URL_AUTH + "logout", {}, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        API_URL_AUTH + "logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -182,6 +187,48 @@ export const authApi = {
       return response.data;
     } catch (error) {
       console.error("Error al verificar el email:", error);
+      throw error;
+    }
+  },
+};
+
+export const userApi = {
+  getCurrentUser: async () => {
+    try {
+      const response = await axios.get(API_URL_USER + "user", {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
+      throw error;
+    }
+  },
+
+  watchAdReward: async () => {
+    try {
+      const response = await axios.post(
+        API_URL_USER + "watchAdReward",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error al procesar la recompensa:", error);
+      throw error;
+    }
+  },
+
+  getDailyStatus: async () => {
+    try {
+      const response = await axios.get(API_URL_USER + "dailyStatus", {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener el estado diario:", error);
       throw error;
     }
   },

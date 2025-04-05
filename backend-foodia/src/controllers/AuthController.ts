@@ -56,9 +56,7 @@ class AuthController {
       return;
     }
   };
-  // --------------------------------------------------------------------------------------
-  // REGISTRO
-  // --------------------------------------------------------------------------------------
+
   static register = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body as IUser;
@@ -109,9 +107,6 @@ class AuthController {
     }
   };
 
-  // --------------------------------------------------------------------------------------
-  // LOGIN
-  // --------------------------------------------------------------------------------------
   static login = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
@@ -158,33 +153,6 @@ class AuthController {
     res.clearCookie("token");
     res.status(200).json({ message: "Sesión cerrada correctamente" });
     return;
-  };
-
-  static getCurrentUser = async (req: Request, res: Response) => {
-    try {
-      const token = req.cookies.token;
-      if (!token) {
-        res.status(401).json({ message: "No se encontró el token" });
-        return;
-      }
-
-      // Verificar si el token es válido
-      const { id } = jwt.verify(token, JWT_SECRET) as { id: string };
-
-      // Buscar el usuario
-      const user = await User.findById(id);
-      if (!user) {
-        res.status(401).json({ message: "No se encontró el usuario" });
-        return;
-      }
-
-      res.status(200).json(user);
-      return;
-    } catch (error) {
-      console.error("Error en getCurrentUser:", error);
-      res.status(500).json({ message: "Error al obtener el usuario" });
-      return;
-    }
   };
 
   static checkEmailExists = async (req: Request, res: Response) => {

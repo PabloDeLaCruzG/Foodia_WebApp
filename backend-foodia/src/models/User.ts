@@ -4,6 +4,9 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   authProvider?: string;
+  dailyGenerationCount?: number;
+  lastGenerationDate?: Date;
+  rewardedGenerations?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -31,6 +34,20 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
       trim: true,
+    },
+    dailyGenerationCount: {
+      type: Number,
+      required: false,
+      default: 3,
+    },
+    lastGenerationDate: {
+      type: Date,
+      required: false,
+    },
+    rewardedGenerations: {
+      type: Number,
+      required: false,
+      default: 0,
     },
   },
   { timestamps: true }

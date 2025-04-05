@@ -35,8 +35,6 @@ router.post(
 
 router.post("/logout", AuthController.logout);
 
-router.get("/user", AuthController.getCurrentUser);
-
 router.post(
   "/checkEmailExists",
   validateRequest,
