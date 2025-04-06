@@ -2,11 +2,12 @@
 
 import Slider from "react-slick";
 import { recommendedRecipes } from "../lib/recommendRecipes";
-import { funFacts } from "../lib/funFacts";
+// import { funFacts } from "../lib/funFacts";
 import Image from "next/image";
 import { recipeApi } from "@/app/lib/data";
 import { useAuth } from "@/app/context/AuthContext";
 import { IRecipe } from "@/app/lib/interfaces";
+import Script from "next/script";
 
 interface IAsideSectionProps {
   onRecipeSave: () => void;
@@ -75,7 +76,26 @@ export default function AsideSection({ onRecipeSave }: IAsideSectionProps) {
           ))}
         </Slider>
       </div>
-      <div className="mt-8">
+      {/* Google AdSense block */}
+      <div className="my-4">
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          strategy="afterInteractive"
+        />
+        <ins
+          className="adsbygoogle"
+          style={{ display: "block" }}
+          data-ad-client="ca-pub-XXXXXXXXXXXX" // Replace with your AdSense client ID
+          data-ad-slot="YYYYYYYYYY" // Replace with your AdSense slot ID
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+        <Script id="adsbygoogle-init" strategy="afterInteractive">
+          {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+        </Script>
+      </div>
+      {/* <div className="mt-8">
         <h2 className="text-lg font-bold mb-2">Curiosidades</h2>
         <Slider {...carouselSettings}>
           {funFacts.map((fact, index) => (
@@ -87,7 +107,7 @@ export default function AsideSection({ onRecipeSave }: IAsideSectionProps) {
             </div>
           ))}
         </Slider>
-      </div>
+      </div> */}
     </>
   );
 }

@@ -116,12 +116,12 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto p-4">
         {/* Fila de botones "All" y "Search" */}
         <div className="flex items-center justify-between px-2 py-2 mb-4 border-b border-gray-200">
-          <button className="flex items-center gap-2 text-gray-800 font-medium px-3 py-1 rounded-md hover:bg-gray-100">
+          <button disabled className="flex items-center gap-2 text-gray-800 font-medium px-3 py-1 rounded-md hover:bg-gray-100">
             <span>All</span>
             <ChevronDownIcon className="w-4 h-4" />
           </button>
           <p className="text-gray-600 text-sm font-medium">Tus recetas</p>
-          <button className="flex items-center gap-2 text-gray-600 bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">
+          <button disabled className="flex items-center gap-2 text-gray-600 bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">
             <span>Search</span>
           </button>
         </div>

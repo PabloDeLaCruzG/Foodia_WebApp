@@ -62,24 +62,41 @@ class RecipeController {
       const includeStr = ingredientsToInclude?.join(", ") || "none";
       const excludeStr = ingredientsToExclude?.join(", ") || "none";
 
+      const userLanguage =
+        req.headers["accept-language"]?.split(",")[0] || "en";
+
+      console.log("User language:", userLanguage);
+
       const prompt = `
-      You are a culinary assistant. Generate a recipe that satisfies the following parameters:
-  - Cuisine types: ${cuisinesStr}.
-  - Dietary restrictions: ${dietStr}.
-  - Extra allergens: ${extraAllergens || "none"}.
-  - Ingredients to include: ${includeStr}.
-  - Ingredients to exclude: ${excludeStr}.
-  - Preparation time preference: ${time}.
-  - Difficulty level: ${difficulty}.
-  - Cost level: ${cost}.
-  - Servings: ${servings}.
-  - Purpose: ${purpose || "general"}.
-  - Extra details: ${extraDetails || "none"}.
-  
-  Generate a recipe that meets these criteria.
-  
-  Return a STRICTLY valid JSON with the following structure:
-  {
+      Eres un asistente culinario. Por favor, responde estrictamente en formato JSON en ${userLanguage}.
+      Genera una receta que cumpla con los siguientes parámetros:
+
+  Tipos de cocina: ${cuisinesStr}.
+
+  Restricciones dietéticas: ${dietStr}.
+
+  Alérgenos adicionales: ${extraAllergens || "ninguno"}.
+
+  Ingredientes a incluir: ${includeStr}.
+
+  Ingredientes a excluir: ${excludeStr}.
+
+  Preferencia de tiempo de preparación: ${time}.
+
+  Nivel de dificultad: ${difficulty}.
+
+  Nivel de coste: ${cost}.
+
+  Raciones: ${servings}.
+
+  Propósito: ${purpose || "general"}.
+
+  Detalles extra: ${extraDetails || "ninguno"}.
+
+  Genera una receta que cumpla con estos criterios.
+
+  Devuelve un JSON ESTRICTAMENTE válido con la siguiente estructura:
+    {
     "title": "string",
     "description": "string",
     "cookingTime": 30,
@@ -94,7 +111,7 @@ class RecipeController {
     },
     "ingredients": [
       {
-        "name": "Ingredient 1",
+        "name": "Ingrediente 1",
         "quantity": 100,
         "unit": "g"
       }
@@ -102,35 +119,18 @@ class RecipeController {
     "steps": [
       {
         "stepNumber": 1,
-        "description": "Step description"
+        "description": "Descripción detallada del paso"
       }
     ]
   }
-  
-  - Do not include extra text, additional or missing brackets, or braces.
-  - Do not use text values for "quantity".
-  - If an ingredient is used "to taste," set "quantity" to 1 and "unit" to "to taste".
-  - Do not leave the unit empty.
+    
+  No incluyas texto adicional, corchetes o llaves extra o faltantes.
 
-  Additional JSON Instructions:
-	•	selectedCuisines: Must be an array of strings (e.g., ["Mexican", "Chinese"]). If there are no values, use an empty array.
-	•	dietRestrictions: Must be an array of strings (e.g., ["Vegetarian"]). If there are no values, use an empty array.
-	•	extraAllergens: Must be a string. If not applicable, use "none".
-	•	ingredientsToInclude: Must be an array of strings representing the ingredients to include.
-	•	ingredientsToExclude: Must be an array of strings representing the ingredients to exclude.
-	•	time: Must be a string (e.g., "medium").
-	•	difficulty: Must be a string (e.g., "intermediate").
-	•	cost: Must be a string (e.g., "medium").
-	•	servings: Must be an integer.
-	•	purpose: Must be a string.
-	•	extraDetails: Must be a string.
+  No uses valores de texto para "quantity".
 
-For any ingredient object that is part of the generated recipe, ensure that:
-	•	name: Is a non-empty string.
-	•	quantity: Is a numeric value (do not use text for quantities).
-	•	unit: Is a non-empty string. If a specific unit is not available, do not leave it empty; assign a valid default value (for example, "to taste") to comply with the validation.
+  Si un ingrediente se usa “al gusto”, establece "quantity" en 1 y "unit" en "al gusto".
 
-Please generate the JSON with no additional text or formatting outside the strict JSON structure, and ensure that all fields follow the above restrictions exactly.
+  No dejes el campo "unit" vacío.
       
       `;
 
@@ -138,11 +138,13 @@ Please generate the JSON with no additional text or formatting outside the stric
       const recipeData = await AIRecipeService.generateRecipeFromPrompt(prompt);
 
       // 3. Obtener imagen desde el servicio
-      const imageUrl = await ImageService.fetchFoodImage(recipeData.title);
+      const imageUrl = await AIRecipeService.generateRecipeImage(
+        recipeData.title,
+        recipeData.ingredients,
+        recipeData.steps
+      );
 
       const authorId = req.user!._id;
-
-      console.log("ID del autor:", authorId);
 
       // 4. Crear y guardar la receta
       const newRecipe = new Recipe({
