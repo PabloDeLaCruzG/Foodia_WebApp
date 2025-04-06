@@ -21,7 +21,12 @@ export default function Landing() {
               height={50}
             />
             {/* <h1 className="text-2xl font-bold text-gray-900">FoodWai</h1> */}
-            <Image src="/Foodwai.png" alt="Logo de FoodWai" width={100} height={50} />
+            <Image
+              src="/Foodwai.png"
+              alt="Logo de FoodWai"
+              width={100}
+              height={50}
+            />
           </div>
           <button
             onClick={() =>

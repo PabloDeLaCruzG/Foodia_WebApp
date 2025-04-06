@@ -24,9 +24,8 @@ export default function AsideSection({ onRecipeSave }: IAsideSectionProps) {
     delete newRecipe.id;
 
     try {
-      console.log("Guardando receta...: ", newRecipe);
-      const result = await recipeApi.createRecipe(newRecipe);
-      console.log("Receta guardada:", result);
+      await recipeApi.createRecipe(newRecipe);
+
       onRecipeSave();
     } catch (error) {
       console.error("Error al guardar la receta:", error);

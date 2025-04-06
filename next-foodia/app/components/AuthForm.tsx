@@ -24,8 +24,7 @@ export default function AuthForm() {
 
   const handleGoogleAuth = async (idToken: string) => {
     try {
-      const res = await authApi.googleAuth(idToken);
-      console.log("Usuario (googleLogin): ", res.user);
+      await authApi.googleAuth(idToken);
       // setUser(res.user); // Si usas AuthContext
       router.push("/home");
     } catch (error) {
@@ -37,9 +36,9 @@ export default function AuthForm() {
     setErrorMsg(null);
     setLoading(true);
     try {
-      console.log("C PRE CHECK: ");
+    
       const res = await authApi.checkEmailExists(email);
-      console.log("RESPONSE 2: ", res);
+    
       if (res.exists) {
         if (res.authProvider === "google") {
           // Opción A: mostrar un mensaje y forzar a usar Google
@@ -73,17 +72,17 @@ export default function AuthForm() {
     setErrorMsg(null);
     setLoading(true);
 
-    console.log("C PRE SUBMIT: ");
+    
     try {
       if (mode === "login") {
-        console.log("LOGIN");
-        const res = await authApi.loginUser({ email, password });
-        console.log("Usuario (Login handleSubmit): ", res.user);
+        
+        await authApi.loginUser({ email, password });
+        
         // setUser(res.user);
       } else {
-        console.log("REGISTER");
-        const res = await authApi.registerUser({ email, password });
-        console.log("Usuario ( RegisterhandleSubmit): ", res.user);
+        
+        await authApi.registerUser({ email, password });
+        
         // setUser(res.user);
       }
       router.push("/home");

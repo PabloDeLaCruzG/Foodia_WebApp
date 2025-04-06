@@ -13,7 +13,6 @@ export const recipeApi = {
   getAllRecipes: async (): Promise<IRecipe[]> => {
     try {
       const response = await axios.get(API_URL);
-      console.log("response: ", response.data);
       return response.data;
     } catch (error) {
       console.error("Error al obtener todas las recetas:", error);
@@ -29,7 +28,6 @@ export const recipeApi = {
         },
         withCredentials: true,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error al obtener todas las recetas:", error);
@@ -46,7 +44,6 @@ export const recipeApi = {
       const response = await axios.get(`${API_URL}/${id}`, {
         withCredentials: true,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error(`Error al obtener la receta con ID ${id}:`, error);
@@ -91,7 +88,6 @@ export const recipeApi = {
    * @param recipeParams Parámetros para generar la receta
    */
   generateRecipe: async (recipeParams: GenerateRecipeBody) => {
-    console.log("Parámetros de la receta:", recipeParams);
     try {
       const response = await axios.post(`${API_URL}/generate`, recipeParams, {
         headers: {
@@ -99,7 +95,6 @@ export const recipeApi = {
         },
         withCredentials: true,
       });
-      console.log("response: ", response.data);
       return response.data;
     } catch (error) {
       console.error("Error al generar la receta:", error);
@@ -183,7 +178,6 @@ export const authApi = {
       const response = await axios.post(API_URL_AUTH + "checkEmailExists", {
         email,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error al verificar el email:", error);
