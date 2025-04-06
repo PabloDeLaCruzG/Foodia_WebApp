@@ -2,9 +2,9 @@ import axios from "axios";
 import { GenerateRecipeBody, IRecipe, IUser } from "./interfaces";
 
 // Ponerlo en .env
-const API_URL = "https://backend-foodia-production.up.railway.app/api/recipes";
-const API_URL_AUTH = "https://backend-foodia-production.up.railway.app/api/auth/";
-const API_URL_USER = "https://backend-foodia-production.up.railway.app/api/users/";
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/recipes`;
+const API_URL_AUTH = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/`;
+const API_URL_USER = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
 
 export const recipeApi = {
   /**
