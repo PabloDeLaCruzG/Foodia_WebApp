@@ -1,9 +1,10 @@
 import axios from "axios";
 import { GenerateRecipeBody, IRecipe, IUser } from "./interfaces";
 
-const API_URL = "http://localhost:4000/api/recipes";
-const API_URL_AUTH = "http://localhost:4000/api/auth/";
-const API_URL_USER = "http://localhost:4000/api/users/";
+// Ponerlo en .env
+const API_URL = "https://backend-foodia-production.up.railway.app/api/recipes";
+const API_URL_AUTH = "https://backend-foodia-production.up.railway.app/api/auth/";
+const API_URL_USER = "https://backend-foodia-production.up.railway.app/api/users/";
 
 export const recipeApi = {
   /**

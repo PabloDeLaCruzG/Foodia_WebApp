@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Puedes obtener el usuario desde localStorage, cookies o llamando a un endpoint
     axios
-      .get("http://localhost:4000/api/users/user", { withCredentials: true })
+      .get("https://backend-foodia-production.up.railway.app/api/users/user", { withCredentials: true })
       .then((response) => {
         setUser(response.data);
       })

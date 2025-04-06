@@ -28,4 +28,9 @@ app.use("/api/recipes", recipeRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
+// get de ping pong
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 export default app;
