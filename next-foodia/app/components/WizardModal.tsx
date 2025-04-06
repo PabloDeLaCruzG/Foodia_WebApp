@@ -18,8 +18,8 @@ export default function WizardModal({ onClose }: WizardModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const scrollableRef = useRef<HTMLDivElement>(null);
 
-  const router = useRouter(); // Para refrescar o navegar
-  const [isLoading, setIsLoading] = useState(false); // <-- Nuevo estado de carga
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Paso 1
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
@@ -82,18 +82,8 @@ export default function WizardModal({ onClose }: WizardModalProps) {
       extraDetails,
     };
 
-    console.log("User Preferences", userPreferences);
-
     try {
       const generatedRecipe = await recipeApi.generateRecipe(userPreferences);
-      console.log(
-        "Generated Recipe:",
-        generatedRecipe,
-        " ID: ",
-        generatedRecipe.recipe._id,
-        " ID: ",
-        generatedRecipe._id
-      );
 
       router.push(`/home/${generatedRecipe.recipe._id}`);
 

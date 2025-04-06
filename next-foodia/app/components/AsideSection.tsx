@@ -1,8 +1,8 @@
 "use client";
 
 import Slider from "react-slick";
-import { recommendedRecipes } from "../../lib/recommendRecipes";
-import { funFacts } from "../../lib/funFacts";
+import { recommendedRecipes } from "../lib/recommendRecipes";
+import { funFacts } from "../lib/funFacts";
 import Image from "next/image";
 import { recipeApi } from "@/app/lib/data";
 import { useAuth } from "@/app/context/AuthContext";

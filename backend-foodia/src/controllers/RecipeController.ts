@@ -6,10 +6,41 @@ import { AIRecipeService } from "../services/aiRecipeService";
 import { ImageService } from "../services/imageService";
 import { GenerateRecipeBody } from "../interfaces/IGenerateRecipeBody";
 import { AuthRequest } from "../interfaces/AuthRequest";
+import User, { IUser } from "../models/User";
+import { resetDailyUsage } from "./UserController";
 
 class RecipeController {
   static generateRecipe = async (req: AuthRequest, res: Response) => {
     try {
+      const userId = req.user!._id;
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(401).json({ message: "Usuario no autenticado" });
+        return;
+      }
+
+      resetDailyUsage(user);
+
+      let hasCredit = false;
+
+      if (user.dailyGenerationCount > 0) {
+        user.dailyGenerationCount -= 1;
+        hasCredit = true;
+      } else if (user.rewardedGenerations > 0) {
+        user.rewardedGenerations -= 1;
+        hasCredit = true;
+      }
+
+      if (!hasCredit) {
+        // Si el usuario no tiene créditos,
+        // devolvemos 403 para evitar que generen
+        // vía Postman sin pasar por la lógica del frontend.
+        res.status(403).json({ message: "No tienes suficiente crédito" });
+        return;
+      }
+
+      await user.save();
+
       const {
         selectedCuisines,
         dietRestrictions,
@@ -156,7 +187,7 @@ Please generate the JSON with no additional text or formatting outside the stric
         return;
       }
 
-      const recipes = (await Recipe.find({ authorId }).sort({ updatedAt: -1 }));
+      const recipes = await Recipe.find({ authorId }).sort({ updatedAt: -1 });
       res.status(200).json(recipes);
     } catch (error) {
       console.error("Error al obtener recetas del autor:", error);
