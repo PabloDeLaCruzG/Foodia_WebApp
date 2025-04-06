@@ -5,6 +5,7 @@ interface AdModalProps {
 
 export default function AdModal({ onClose, onWatchAd }: AdModalProps) {
   const closeAdModal = () => onClose();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWatchAd = () => onWatchAd();
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
